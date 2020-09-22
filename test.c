@@ -1,5 +1,8 @@
 #include <stdio.h>
+
 exia
+dynames
+
 int main(){
     int i = 12;
     printf("%d\n", i);
