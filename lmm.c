@@ -2,9 +2,14 @@
 #include <memory.h>
 #include <unistd.h> //getpagesize() function
 #include <sys/mman.h> //mmap()
+#include <stdint.h>
 
-//static variables
+//static global variables
 static size_t PAGE_SIZE=0;
+#include "lmm.h"
+
+static struct pageForFamilies * startingVMPage=NULL;
+
 
 //function to map virtual memory page size to memory and return pointer to beginning region of allocated memory
 static void * get_VMpage_from_kernel(int units){
@@ -29,13 +34,21 @@ static void return_VMpage_to_kernel(void * vmPage, int units){
 		printf("Successfully unmapped memory\n");
 }
 
+void new_pageFamily_Instance(char * name, uint32_t size){
+	struct pageFamily * temp;
+	strcpy(temp->pageFamilyName,name);
+	temp->pageFamilySize=size;	
+	
+	if(
+}
+
 int main(){
 	//function to getpagesize of virtual memory page on Linux system and print
 	PAGE_SIZE=getpagesize();
 	printf("%ld\n",PAGE_SIZE);
 
 	void * vmpage_Address=get_VMpage_from_kernel(2);
-	return_VMpage_to_kernel(vmpage_Address, PAGE_SIZE*0);
+	return_VMpage_to_kernel(vmpage_Address, PAGE_SIZE*2);
 
 	return 0;
 }
