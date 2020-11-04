@@ -3,13 +3,14 @@
 #include <unistd.h> //getpagesize() function
 #include <sys/mman.h> //mmap()
 #include <stdint.h>
+#include <assert.h> //needed for assert() function
 
 //static global variables
 static size_t PAGE_SIZE=0;
 #include "lmm.h"
 
 static struct pageForFamilies * startingVMPage=NULL;
-
+struct pageFamily * currentPageFamily = NULL;
 
 //function to map virtual memory page size to memory and return pointer to beginning region of allocated memory
 static void * get_VMpage_from_kernel(int units){
@@ -35,11 +36,47 @@ static void return_VMpage_to_kernel(void * vmPage, int units){
 }
 
 void new_pageFamily_Instance(char * name, uint32_t size){
-	struct pageFamily * temp;
-	strcpy(temp->pageFamilyName,name);
-	temp->pageFamilySize=size;	
+
+	struct pageFamily * currentPageFamily = NULL;
+	struct pageForFamilies * pageForFamilies_NewInstance = NULL;
+
+	if (size>PAGE_SIZE){
+		printf("Error, struct exceeds size of VM Page, Function name: %s\n", __FUNCTION__);
+		return;
+	}
+
 	
-	if(
+	if (!startingVMPage){
+		startingVMPage=(struct pageForFamilies *)get_VMpage_from_kernel(1);
+		startingVMPage->next=NULL;
+		strncpy(startingVMPage->pageFamilyArr[0].pageFamilyName, name, MAX_NAME_SIZE);
+		startingVMPage->pageFamilyArr[0].pageFamilySize=size;
+		return;
+	}
+
+	uint32_t count = 0;
+
+	ITERATE_PAGE_FAMILIES_BEGIN(startingVMPage, currentPageFamily) {
+
+		if(strncmp(currentPageFamily->pageFamilyName, name, MAX_NAME_SIZE) != 0) {
+			count++;
+			continue;
+		}
+
+		assert(0);
+
+	} ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily);
+
+	if (count == MAX_pageFamily_PerPage){
+		pageForFamilies_NewInstance = (struct pageForFamilies *)get_VMpage_from_kernel(1);
+		pageForFamilies_NewInstance->next = startingVMPage;
+		startingVMPage = pageForFamilies_NewInstance;
+		currentPageFamily = &startingVMPage->pageFamilyArr[0];		
+	}
+
+	strncpy(currentPageFamily->pageFamilyName, name, MAX_NAME_SIZE);
+	currentPageFamily->pageFamilySize = size;
+	
 }
 
 int main(){
@@ -49,6 +86,8 @@ int main(){
 
 	void * vmpage_Address=get_VMpage_from_kernel(2);
 	return_VMpage_to_kernel(vmpage_Address, PAGE_SIZE*2);
+
+	printf("%ld\n",MAX_pageFamily_PerPage);
 
 	return 0;
 }
