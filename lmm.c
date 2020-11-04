@@ -10,7 +10,6 @@ static size_t PAGE_SIZE=0;
 #include "lmm.h"
 
 static struct pageForFamilies * startingVMPage=NULL;
-struct pageFamily * currentPageFamily = NULL;
 
 //function to map virtual memory page size to memory and return pointer to beginning region of allocated memory
 static void * get_VMpage_from_kernel(int units){
@@ -79,16 +78,7 @@ void new_pageFamily_Instance(char * name, uint32_t size){
 	
 }
 
-int main(){
-	//function to getpagesize of virtual memory page on Linux system and print
+void mm_init(){
+	printf("Running\n");
 	PAGE_SIZE=getpagesize();
-	printf("%ld\n",PAGE_SIZE);
-
-	void * vmpage_Address=get_VMpage_from_kernel(2);
-	return_VMpage_to_kernel(vmpage_Address, PAGE_SIZE*2);
-
-	printf("%ld\n",MAX_pageFamily_PerPage);
-
-	return 0;
 }
-
