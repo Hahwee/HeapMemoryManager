@@ -22,6 +22,9 @@ int main(int argc, char **argv){
 
 	mm_init();
 	MM_REG_STRUCT(struct gundam);
+	MM_REG_STRUCT(struct ship);
+	
+	print_RegisteredPageFams();
 
 	return 0;
 }

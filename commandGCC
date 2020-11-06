@@ -1,0 +1,2 @@
+gcc -g lmm.o testapp.o -o exe
+gcc -g -c testapp.c -o testapp.o

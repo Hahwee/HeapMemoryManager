@@ -14,7 +14,7 @@ static struct pageForFamilies * startingVMPage=NULL;
 //function to map virtual memory page size to memory and return pointer to beginning region of allocated memory
 static void * get_VMpage_from_kernel(int units){
 	void * vmpage=mmap(0,PAGE_SIZE*units,PROT_EXEC|PROT_WRITE|PROT_READ,MAP_PRIVATE|MAP_ANONYMOUS,0,0);	
-	printf("%p\n",vmpage);
+	printf("VM page memory address at: %p\n",vmpage);
 
 	if (vmpage==MAP_FAILED){
 		printf("Unable to get page\n");
@@ -36,15 +36,17 @@ static void return_VMpage_to_kernel(void * vmPage, int units){
 
 void new_pageFamily_Instance(char * name, uint32_t size){
 
+	//initialize variables
 	struct pageFamily * currentPageFamily = NULL;
 	struct pageForFamilies * pageForFamilies_NewInstance = NULL;
 
+	//checks to see if size of added page family is larger than the maximum size of a VM Page
 	if (size>PAGE_SIZE){
 		printf("Error, struct exceeds size of VM Page, Function name: %s\n", __FUNCTION__);
 		return;
 	}
 
-	
+	//If there is no initialized VM page, then allocate memory for it 
 	if (!startingVMPage){
 		startingVMPage=(struct pageForFamilies *)get_VMpage_from_kernel(1);
 		startingVMPage->next=NULL;
@@ -53,8 +55,10 @@ void new_pageFamily_Instance(char * name, uint32_t size){
 		return;
 	}
 
+	//count var to track number of page families on VM Page
 	uint32_t count = 0;
 
+	//Iteration macro to loop over page families 
 	ITERATE_PAGE_FAMILIES_BEGIN(startingVMPage, currentPageFamily) {
 
 		if(strncmp(currentPageFamily->pageFamilyName, name, MAX_NAME_SIZE) != 0) {
@@ -76,6 +80,17 @@ void new_pageFamily_Instance(char * name, uint32_t size){
 	strncpy(currentPageFamily->pageFamilyName, name, MAX_NAME_SIZE);
 	currentPageFamily->pageFamilySize = size;
 	
+}
+
+void print_RegisteredPageFams(){
+	
+	struct pageFamily * currentPageFamily = NULL;
+
+	uint32_t count = 0;
+
+	ITERATE_PAGE_FAMILIES_BEGIN(startingVMPage, currentPageFamily) {
+		printf("Page Family: %s, Size = %d\n", currentPageFamily->pageFamilyName, currentPageFamily->pageFamilySize);
+	} ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily);
 }
 
 void mm_init(){
