@@ -89,7 +89,7 @@ void print_RegisteredPageFams(){
 	struct pageFamily * currentPageFamily = NULL;
 	uint32_t count = 0;
 	
-	while(!tempVMPage->next){
+	while(tempVMPage != NULL){
 		ITERATE_PAGE_FAMILIES_BEGIN(startingVMPage, currentPageFamily) {
 			printf("Page Family: %s, Size = %d\n", currentPageFamily->pageFamilyName, currentPageFamily->pageFamilySize);
 		} ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily);
@@ -98,16 +98,18 @@ void print_RegisteredPageFams(){
 }
 
 struct pageFamily * pageFamilyLookup(char * name){
-	
+
+	printf("It works starting\n");
+
 	struct pageForFamilies * tempVMPage = startingVMPage;
 	struct pageFamily * currentPageFamily = NULL;
 	uint32_t count = 0;
 
 	printf("Current starting VM Page: %p\n", tempVMPage);	
 
-	while(!tempVMPage->next){
+	while(tempVMPage != NULL){
 		ITERATE_PAGE_FAMILIES_BEGIN(tempVMPage, currentPageFamily) {
-			if (strcmp(currentPageFamily->pageFamilyName, name) == 0){
+			if (strncmp(currentPageFamily->pageFamilyName, name, MAX_NAME_SIZE ) == 0){
 				printf("TestingName: %s\n", name);
 				return currentPageFamily;
 			}

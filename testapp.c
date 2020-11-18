@@ -28,6 +28,8 @@ int main(int argc, char **argv){
 
 	print_RegisteredPageFams();
 
+	printf("blehhhhh\n");
+
 	struct pageFamily * tempVar = pageFamilyLookup("ship");
 	
 	printf("Pointer to pageFamily lookup: %p\n", tempVar);
