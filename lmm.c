@@ -4,6 +4,7 @@
 #include <sys/mman.h> //mmap()
 #include <stdint.h>
 #include <assert.h> //needed for assert() function
+#include <string.h>
 
 //static global variables
 static size_t PAGE_SIZE=0;
@@ -84,14 +85,40 @@ void new_pageFamily_Instance(char * name, uint32_t size){
 
 void print_RegisteredPageFams(){
 	
+	struct pageForFamilies * tempVMPage = startingVMPage;
 	struct pageFamily * currentPageFamily = NULL;
+	uint32_t count = 0;
+	
+	while(!tempVMPage->next){
+		ITERATE_PAGE_FAMILIES_BEGIN(startingVMPage, currentPageFamily) {
+			printf("Page Family: %s, Size = %d\n", currentPageFamily->pageFamilyName, currentPageFamily->pageFamilySize);
+		} ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily);
+		tempVMPage = tempVMPage->next;
+	}
+}
 
+struct pageFamily * pageFamilyLookup(char * name){
+	
+	struct pageForFamilies * tempVMPage = startingVMPage;
+	struct pageFamily * currentPageFamily = NULL;
 	uint32_t count = 0;
 
-	ITERATE_PAGE_FAMILIES_BEGIN(startingVMPage, currentPageFamily) {
-		printf("Page Family: %s, Size = %d\n", currentPageFamily->pageFamilyName, currentPageFamily->pageFamilySize);
-	} ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily);
+	printf("Current starting VM Page: %p\n", tempVMPage);	
+
+	while(!tempVMPage->next){
+		ITERATE_PAGE_FAMILIES_BEGIN(tempVMPage, currentPageFamily) {
+			if (strcmp(currentPageFamily->pageFamilyName, name) == 0){
+				printf("TestingName: %s\n", name);
+				return currentPageFamily;
+			}
+			else
+				continue;
+		}ITERATE_PAGE_FAMILIES_END(tempVMPage, currentPageFamily);
+		tempVMPage = tempVMPage->next;
+	}
+	return NULL;
 }
+
 
 void mm_init(){
 	printf("Running\n");
