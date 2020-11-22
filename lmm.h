@@ -31,4 +31,14 @@ struct pageForFamilies{
 
 #define ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily)}}
 
+#define metaOffset(container_structure, field_name) \
+
+#define metaGetPage(metaBlockPtr) \
+
+#define metaNextBlock(currentBlock) \
+
+#define metaPrevBlock(currentBlock) \
+
+
+
 #endif

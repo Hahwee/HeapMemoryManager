@@ -35,6 +35,7 @@ static void return_VMpage_to_kernel(void * vmPage, int units){
 		printf("Successfully unmapped memory\n");
 }
 
+//function to add a new page family to VM Page with available memory
 void new_pageFamily_Instance(char * name, uint32_t size){
 
 	//initialize variables
@@ -71,6 +72,7 @@ void new_pageFamily_Instance(char * name, uint32_t size){
 
 	} ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily);
 
+	//creates new VM page if current VM pagefamily limit reached
 	if (count == MAX_pageFamily_PerPage){
 		pageForFamilies_NewInstance = (struct pageForFamilies *)get_VMpage_from_kernel(1);
 		pageForFamilies_NewInstance->next = startingVMPage;
@@ -78,35 +80,39 @@ void new_pageFamily_Instance(char * name, uint32_t size){
 		currentPageFamily = &startingVMPage->pageFamilyArr[0];		
 	}
 
+	//copies data to newly added pageFamily
 	strncpy(currentPageFamily->pageFamilyName, name, MAX_NAME_SIZE);
 	currentPageFamily->pageFamilySize = size;
 	
 }
 
+//prints all page families in VM Pages
 void print_RegisteredPageFams(){
 	
+	//variables initialized
 	struct pageForFamilies * tempVMPage = startingVMPage;
 	struct pageFamily * currentPageFamily = NULL;
 	uint32_t count = 0;
 	
+	//Iterates through all VM pages and prints each page family 
 	while(tempVMPage != NULL){
-		ITERATE_PAGE_FAMILIES_BEGIN(startingVMPage, currentPageFamily) {
+		ITERATE_PAGE_FAMILIES_BEGIN(tempVMPage, currentPageFamily) {
 			printf("Page Family: %s, Size = %d\n", currentPageFamily->pageFamilyName, currentPageFamily->pageFamilySize);
-		} ITERATE_PAGE_FAMILIES_END(startingVMPage, currentPageFamily);
+		} ITERATE_PAGE_FAMILIES_END(tempVMPage, currentPageFamily);
 		tempVMPage = tempVMPage->next;
 	}
 }
 
+//looks up specific page family
 struct pageFamily * pageFamilyLookup(char * name){
-
-	printf("It works starting\n");
 
 	struct pageForFamilies * tempVMPage = startingVMPage;
 	struct pageFamily * currentPageFamily = NULL;
 	uint32_t count = 0;
 
-	printf("Current starting VM Page: %p\n", tempVMPage);	
+	//debug print: printf("Current starting VM Page: %p\n", tempVMPage);	
 
+	//loops through all VM pages and compares page family names with given input, returns ptr if true, NULL if false
 	while(tempVMPage != NULL){
 		ITERATE_PAGE_FAMILIES_BEGIN(tempVMPage, currentPageFamily) {
 			if (strncmp(currentPageFamily->pageFamilyName, name, MAX_NAME_SIZE ) == 0){
@@ -121,7 +127,7 @@ struct pageFamily * pageFamilyLookup(char * name){
 	return NULL;
 }
 
-
+//initialize program, retrieves VM page size of system
 void mm_init(){
 	printf("Running\n");
 	PAGE_SIZE=getpagesize();
