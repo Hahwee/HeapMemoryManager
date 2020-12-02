@@ -2,9 +2,10 @@
 #include <memory.h>
 #include <unistd.h> //getpagesize() function
 #include <sys/mman.h> //mmap()
-#include <stdint.h>
+#include <stdint.h> //uint32_t
 #include <assert.h> //needed for assert() function
 #include <string.h>
+#include <stdbool.h> //needed to utilize boolean
 
 //static global variables
 static size_t PAGE_SIZE=0;
@@ -92,7 +93,7 @@ void print_RegisteredPageFams(){
 	//variables initialized
 	struct pageForFamilies * tempVMPage = startingVMPage;
 	struct pageFamily * currentPageFamily = NULL;
-	uint32_t count = 0;
+	//uint32_t count = 0;
 	
 	//Iterates through all VM pages and prints each page family 
 	while(tempVMPage != NULL){
@@ -108,7 +109,7 @@ struct pageFamily * pageFamilyLookup(char * name){
 
 	struct pageForFamilies * tempVMPage = startingVMPage;
 	struct pageFamily * currentPageFamily = NULL;
-	uint32_t count = 0;
+	//uint32_t count = 0;
 
 	//debug print: printf("Current starting VM Page: %p\n", tempVMPage);	
 
