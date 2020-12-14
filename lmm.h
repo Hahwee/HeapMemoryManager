@@ -77,18 +77,14 @@ struct blockMetadata{
 //loops through metablocks of VM page, finds # of free/allocated blocks, and the address and size of the largest blocks
 #define ITERATE_META_BLOCKS(firstMetaBlock) \
 { \
-	//Create counter variables and temporary variables \
 	uint32_t  freeBlocks, allocatedBlocks, sizeLargestFree, sizeLargestAllocated = 0; \
 	struct blockMetadata * addressLargestFree, addressLargestAllocated = NULL; \
 	struct blockMetadata * tempBlock = firstMetaBlock; \
 	\
-	//for loop of all metablocks until NULL \
 	for (tempBlock; tempBlock; tempBlock=tempBlock->nextBlock){ \
-		//if this statement true, then add to allocatedBlocks count, and zero out freeBlocks count \
 		if (tempBlock->isAllocated==true){ \
 			allocatedBlocks++; \
 			freeBlocks=0; \
-			//compares current block size to largest and modifies as needed, if none exists, then set sizeLargestAllocated \
 			if (sizeLargestAllocated!=0) { \
 				if (tempBlock->blockSize>sizeLargestAllocated){ \
 					sizeLargestAllocated=tempBlock->blockSize; \
@@ -98,7 +94,6 @@ struct blockMetadata{
 				sizeLargestAllocated=tempBlock->blockSize; \
 				addressLargestAllocated=tempBlock; \
 			} \
-		//basically the same as above, but for free blocks \
 		} else { \
 			freeBlocks++; \
 			if (sizeLargestFree!=0) { \
@@ -112,7 +107,6 @@ struct blockMetadata{
 			} \
 		} \
 		\
-		//if there are 2 consecutive free blocks, then assert(0) \
 		if (freeBlocks==2) { \
 			assert(0); \
 		} \
