@@ -111,6 +111,6 @@ struct blockMetadata{
 			assert(0); \
 		} \
 
-#define ITERATE_MEiTA_BLOCKS_END(firstMetaBlock)}}
+#define ITERATE_META_BLOCKS_END(firstMetaBlock)}}
 
 #endif
