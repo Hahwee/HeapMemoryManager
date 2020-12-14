@@ -1,4 +1,6 @@
-# HeapMemoryManager
+# HeapMemoryManager in C (Udemy Course Project)
+
+Link: https://www.udemy.com/course/os-project-lmm/
 
 Shows how the linux memory manager works/interacts between a *nix system's user space and kernel space. 
 
